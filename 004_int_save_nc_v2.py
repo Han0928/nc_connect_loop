@@ -13,13 +13,7 @@ import datetime
 from scipy.io import netcdf
 import os
 
-stashcode='m01s00i004'  #P m01s00i408
-# nuc_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i101'), is_lam)
-# ait_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i103'),is_lam)
-# acc_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i107'),is_lam)
-# cor_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i113'),is_lam)
-# aitin_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i119'),is_lam)
-# stashcodes = ['m01s34i101', 'm01s34i103', 'm01s34i107', 'm01s34i113', 'm01s34i119']
+stashcodes = ['m01s34i101', 'm01s34i103', 'm01s34i107', 'm01s34i113', 'm01s34i119']
 file_path = "/jet/home/ding0928/python_analysis/Han_connect/"
 
 latbottom = 35.0
@@ -34,7 +28,7 @@ def height_level_range(cell):
 rose = 'u-ct706'
 files_directory_UKCA='/jet/home/ding0928/cylc-run/'+rose+'/share/cycle/'
 days=[ str('0720'), str('0722'), str('0724'), str('0726'), str('0728'), str('0730'), str('0801'), str('0803'), str('0805'), str('0807'), str('0809')]
-filechunks = ['pe']
+filechunks = ['pb','pc','pd','pe']
 run = '20140720T0000Z'
 
 def make_directories(nameofdir):
@@ -73,21 +67,25 @@ for iday in days:
 
     tacc3hr=0
 
-    stashconstr = iris.AttributeConstraint(STASH=stashcode)
-    cubes=iris.load((pp_files[0])[0],stashconstr)
+    stashconstrs = [iris.AttributeConstraint(STASH=code) for code in stashcodes]
+    cubes = [iris.load((pp_files[0])[0], constr) for constr in stashconstrs]
     print('loading cubes '+str(pp_files[0][0]))
 
     if len(pp_files) > 1:
         for filelist in pp_files[1:]:
             print('loading cubes '+str(filelist[0]))
-            cubel = iris.load(filelist[0],stashconstr)
+            cubel = [iris.load(file, constr) for constr in stashconstrs
+                        for file in filelist]
             for cube1 in cubel:
                 cubes.append(cube1)
     print('cubes',cubes)
     test_cubes = iris.load('/jet/home/ding0928/cylc-run/u-ct706/share/cycle/20140722T0000Z/Regn1/resn_1/RA2M/um/umnsaa_pe048')
     print('test_cubes',test_cubes)
 
-    coord_names = [coord.name() for coord in cubes[0].coords()]
+    coord_names = []
+    for cube in cubes:
+        for coord in cube.coords():
+            coord_names.append(coord.name())
     print(coord_names)
 
     bigarray=[]
@@ -120,7 +118,8 @@ for iday in days:
     if len(pp_files[0]) > 1:
         fileindex=1
         for step_file in (pp_files[0])[1:]:
-            morecubes=iris.load(step_file,stashconstr)        
+            morecubes = [iris.load(step_file, constr) for constr in stashconstrs]
+
             print('loading cubes '+str(step_file))
             if len(pp_files) > 1:
                 for filelist in pp_files[1:]:
