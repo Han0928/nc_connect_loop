@@ -75,7 +75,6 @@ for iday in days:
     print(stashconstrs)
 
     # Load the cubes
-    # Load the cubes
     cubes = []
     for stashconstr in stashconstrs:
         cubes.append(iris.load((pp_files[0])[0], stashconstr))
@@ -96,14 +95,36 @@ for iday in days:
                     if cube and cube[0].attributes['STASH'] == stashcode:
                         cubes[-1].append(cube)
                     i += 1
+    # cubes = []
+    # for stashconstr in stashconstrs:
+    #     cubes.append(iris.load((pp_files[0])[0], stashconstr))
+    #     if len(pp_files[0]) > 1:
+    #         fileindex = 1
+    #         for step_file in (pp_files[0])[1:]:
+    #             morecubes = [iris.load(step_file, constr) for constr in stashconstrs]
+
+    #             print('loading cubes '+str(step_file))
+    #             if len(pp_files) > 1:
+    #                 for filelist in pp_files[1:]:
+    #                     print('loading cubes '+str(filelist[fileindex]))
+    #                     morecubel = iris.load(filelist[fileindex], stashconstr)
+    #                     for morecube in morecubel:
+    #                         morecubes.append(morecube)
+
+    #             for i, cube_list in enumerate(morecubes):
+    #                 for cube in cube_list:
+    #                     if cube.attributes['STASH'] == stashcodes[i]:
+    #                         cubes[i].append(cube)
+
 
     # Process the cubes
     bigarray = []
     timepointslist = []
     print('Begin Cube Data Processing')
-    for cube_list in cubes:
-        for cube in cube_list:
-            cl = iris.cube.CubeList()
+    for i, stashcode in enumerate(stashcodes):
+        stashcode_cubes = cubes[i]
+        cl = iris.cube.CubeList()
+        for cube in stashcode_cubes:
             cube.remove_coord('forecast_reference_time')
             try:
                 cube.remove_coord('surface_altitude')
@@ -123,84 +144,10 @@ for iday in days:
                     cl.append(sub_cube)
             else:
                 cl.append(cube)
-            bigarray.append(cl)
+        bigarray.append(cl)
 
-    # Save the cubes
-    if len(pp_files[0]) > 1:
-        fileindex=1
-        for step_file in (pp_files[0])[1:]:
-            morecubes = [iris.load(step_file, constr) for constr in stashconstrs]
-
-            print('loading cubes '+str(step_file))
-            if len(pp_files) > 1:
-                for filelist in pp_files[1:]:
-                    print('loading cubes '+str(filelist[fileindex]))
-                    morecubel =iris.load(filelist[fileindex],stashconstr)
-                    for morecube in morecubel:
-                        morecubes.append(morecube)
-            # here is where i am stuck in the loop, will come back to this later!!!!!!
-
-            
-            # i=0 here
-            # for cube_list in morecubes:
-            #     # for cube in cube_list:
-            #     if cube.attributes['STASH'] == stashcode:
-            #         # Perform operations on the cube here
-            #         print(cube.coord('time').points)
-            #         for j in timepointslist[i]:
-            #             it=0
-            #             for k in cube.coord('time').points:
-            #                 if k ==j:
-            #                     print('removing',j)
-            #                     if it == 0:
-            #                         if cube.shape[0] > 1:
-            #                             cube = cube[1:, ...]
-            #                         else:
-            #                             # Create a new cube if the existing one only has one time point
-            #                             time_coord = cube.coord('time')
-            #                             new_data = np.empty(cube.shape[1:], dtype=cube.dtype)
-            #                             new_cube = iris.cube.Cube(new_data, dim_coords_and_dims=[(time_coord.copy(), 0)])
-            #                             new_cube.add_dim_coord(time_coord, 0)
-            #                             cube = new_cube
-            #                     elif it == 1 and len(cube.coord('time').points) == 2:
-            #                         cube = cube[0:1, ...]
-            #                     else:
-            #                         raise ValueError('Overlapping fudged removal failure')
-
-            #                     print(cube)
-            #                 it=it+1
-
-
-                if cube.name() ==(bigarray[i])[0].name() and cube.attributes['STASH']==(bigarray[i])[0].attributes['STASH']:
-                    if len(cube.coord('time').points) >1:
-                        for sub_cube in cube.slices_over('time'):
-                            bigarray[i].append(sub_cube)
-                    else:
-                        bigarray[i].append(cube)
-                else:
-                    for cubelist in bigarray:
-                        if cube.name() ==cubelist[0].name() and cube.attributes['STASH']==cubelist[0].attributes['STASH']:
-                            if len(cube.coord('time').points) >1:
-                                for sub_cube in cube.slices_over('time'):
-                                    bigarray[i].append(sub_cube)
-                            else:
-                                cubelist.append(cube)
-                            break
-                for j in cube.coord('time').points:
-                    array=timepointslist[i]
-                    print(j)
-                    timepointslist[i] = np.append(array,j)
-                i=i+1
-            print(timepointslist)
-            fileindex=fileindex+1
-    
-    print(bigarray)
-    print(timepointslist)
-    print(np.shape(bigarray))
-    print(np.shape(timepointslist))
-
-    make_directories(rosefolder)
-    make_directories(ncfolder)
-    save_small_nc_files(bigarray, ncfolder, stashcode, timepointslist[0])
-sys.exit()
+# Save the cubes
+make_directories(rosefolder)
+make_directories(ncfolder)
+save_small_nc_files(bigarray, ncfolder, stashcodes, timepointslist[0])
 
