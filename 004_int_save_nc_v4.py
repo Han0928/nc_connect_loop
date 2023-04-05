@@ -19,44 +19,45 @@ file_path = "/jet/home/ding0928/python_analysis/Han_connect/"
 latbottom = 35.0
 lattop = 45.0  
 
-def lat_range(cell):
-   return latbottom < cell < lattop
-
-def height_level_range(cell):
-    return 0 <= cell <= 40
-
 rose = 'u-ct706'
 files_directory_UKCA='/jet/home/ding0928/cylc-run/'+rose+'/share/cycle/'
 days=[ str('0720'), str('0722'), str('0724'), str('0726'), str('0728'), str('0730'), str('0801'), str('0803'), str('0805'), str('0807'), str('0809')]
 filechunks = ['pb','pc','pd','pe']
 run = '20140720T0000Z'
 
+
+def lat_range(cell):
+    return latbottom < cell < lattop
+
+def height_level_range(cell):
+    return 0 <= cell <= 40
+
 def make_directories(nameofdir):
     newdir = os.path.join(files_directory_UKCA, nameofdir)
     try:
         os.mkdir(newdir)
+    except FileExistsError:
+        print('Folder {} already exists'.format(newdir))
     except OSError as e:
-        if e.errno == 17:
-            print('Folder {} already exists'.format(newdir))
-            pass
-        else:
-            raise OSError
+        raise OSError
     return('Created Folder: {}'.format(newdir))
 
 def save_small_nc_files(bigarray, ncfolder, stashcodes, timepointslist):
     print('Begin Saving')
     print('Save Location: {}'.format(ncfolder))
-    i=0
-    for cubes in bigarray:
-        for cube in cubes:
-            stashcode = cube.attributes['STASH']
-            index = stashcodes.index(stashcode)
-            saving_name = ncfolder+'Rgn_'+str(stashcode)+'_'+str(timepointslist[index][i])+'.nc'
-            print('saving',saving_name)
-            iris.save(cube, saving_name, netcdf_format="NETCDF4")
-        i=i+1
-    return('Saving Complete')
+    for timepoint in timepointslist:
+        for stashcode in stashcodes:
+            cubes_to_save = []
+            for cubes_list in bigarray:
+                for cube in cubes_list:
+                    if np.all((cube.attributes['STASH'] == stashcode) & (cube.coord('time').points[0] == timepoint)):
+                        cubes_to_save.append(cube)
 
+            if len(cubes_to_save) > 0:
+                saving_name = ncfolder+'Rgn_'+str(stashcode)+'_'+str(timepoint)+'.nc'
+                print('saving', saving_name)
+                iris.save(cubes_to_save, saving_name, netcdf_format="NETCDF4")
+    return 'Saving Complete'
 
 for iday in days:
     files_directory=files_directory_UKCA+'2014'+iday+'T0000Z/Regn1/resn_1/RA2M/um/' 
@@ -95,26 +96,6 @@ for iday in days:
                     if cube and cube[0].attributes['STASH'] == stashcode:
                         cubes[-1].append(cube)
                     i += 1
-    # cubes = []
-    # for stashconstr in stashconstrs:
-    #     cubes.append(iris.load((pp_files[0])[0], stashconstr))
-    #     if len(pp_files[0]) > 1:
-    #         fileindex = 1
-    #         for step_file in (pp_files[0])[1:]:
-    #             morecubes = [iris.load(step_file, constr) for constr in stashconstrs]
-
-    #             print('loading cubes '+str(step_file))
-    #             if len(pp_files) > 1:
-    #                 for filelist in pp_files[1:]:
-    #                     print('loading cubes '+str(filelist[fileindex]))
-    #                     morecubel = iris.load(filelist[fileindex], stashconstr)
-    #                     for morecube in morecubel:
-    #                         morecubes.append(morecube)
-
-    #             for i, cube_list in enumerate(morecubes):
-    #                 for cube in cube_list:
-    #                     if cube.attributes['STASH'] == stashcodes[i]:
-    #                         cubes[i].append(cube)
 
 
     # Process the cubes
@@ -146,8 +127,10 @@ for iday in days:
                 cl.append(cube)
         bigarray.append(cl)
 
-# Save the cubes
-make_directories(rosefolder)
-make_directories(ncfolder)
-save_small_nc_files(bigarray, ncfolder, stashcodes, timepointslist[0])
+    print(bigarray) 
+    print(ncfolder)
+    make_directories(rosefolder)
+    make_directories(ncfolder)
+    save_small_nc_files(bigarray, ncfolder, stashcodes, timepointslist)
 
+sys.exit()
