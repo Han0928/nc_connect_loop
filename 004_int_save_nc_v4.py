@@ -13,6 +13,8 @@ import datetime
 from scipy.io import netcdf
 import os
 
+# Code to load the files
+
 stashcodes = ['m01s34i101', 'm01s34i103', 'm01s34i107', 'm01s34i113', 'm01s34i119']
 file_path = "/jet/home/ding0928/python_analysis/Han_connect/"
 
@@ -41,6 +43,19 @@ def make_directories(nameofdir):
     except OSError as e:
         raise OSError
     return('Created Folder: {}'.format(newdir))
+
+# def make_directories(nameofdir):
+#     newdir = os.path.join(files_directory_UKCA, nameofdir)
+#     try:
+
+#         os.mkdir(newdir)
+#     except OSError as e:
+#         if e.errno == 16:
+#             print('Folder {} already exists'.format(newdir))
+#             pass
+#         else:
+#             raise OSError
+#     return('Created Folder: {}'.format(newdir))
 
 def save_small_nc_files(bigarray, ncfolder, stashcodes, timepointslist):
     print('Begin Saving')
