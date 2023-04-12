@@ -36,7 +36,7 @@ import os
 #import multiprocessing
 
 rose = 'u-cs093'
-stashcode='m01s34i101' 
+stashcode='m01s34i119'
 def make_directories(nameofdir):
     newdir = os.path.join(nameofdir)
     print(newdir)
@@ -71,7 +71,9 @@ def delete_smallnc(smallncfolder, stashcode):
         os.remove(stashfile)
     print('Deleted {} small nc files for stash {}'.format(len(stashfiles), stashcode))
 
-rosefolder = '/jet/home/ding0928/python_analysis/Han_connect/nc_flie/'+rose+'/'
+#rosefolder = '/jet/home/ding0928/python_analysis/Han_connect/nc_flie/'+rose+'/'
+rosefolder = '/ocean/projects/atm200005p/ding0928/nc_file_full/'+rose+'/'
+
 bigncfolder = rosefolder+'full_nc_files/'
 smallncfolder = rosefolder+'small_nc_files/'
 

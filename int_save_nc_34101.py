@@ -13,7 +13,7 @@ import datetime
 from scipy.io import netcdf
 import os
 
-stashcode='m01s34i101'  #P m01s00i408
+stashcode='m01s34i103'  #P m01s00i408
 # nuc_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i101'), is_lam)
 # ait_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i103'),is_lam)
 # acc_num_mixing = load_um_cube(timeindexes, surfcoord, prefix+numlabel,iris.AttributeConstraint(STASH='m01s34i107'),is_lam)
