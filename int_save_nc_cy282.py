@@ -10,12 +10,14 @@ import iris
 from glob import glob
 import os
 
-stashcode = 'm01s38i405'
+stashcode = 'm01s34i103' #'m01s34i103' 
 rose = 'u-cy282'
-months = ['pm2014jan', 'pm2014feb', 'pm2014mar', 'pm2014apr', 'pm2014may', 'pm2014jun',
-          'pm2014jul', 'pm2014aug', 'pm2014sep', 'pm2014oct', 'pm2014nov', 'pm2014dec']
+header='cy282a.'
+file_chunk='pm'
+months = ['2014jan', '2014feb', '2014mar', '2014apr', '2014may', '2014jun',
+          '2014jul', '2014aug', '2014sep', '2014oct', '2014nov', '2014dec']
 
-files_directory_UKCA = '/jet/home/ding0928/cylc-run' + rose + '/share/data/History_Data/'
+files_directory_UKCA = '/jet/home/ding0928/cylc-run/' + rose + '/share/data/History_Data/'
 rosefolder = '/ocean/projects/atm200005p/ding0928/nc_file_full/' + rose + '/'
 ncfolder = rosefolder + 'small_nc_files/'
 
@@ -43,8 +45,10 @@ def save_small_nc_files(bigarray, ncfolder, rose, stashcode, month):
 
 for month in months:
     # Update the file path and filename generation with 'month' instead of 'iday'
-    files_directory = files_directory_UKCA + month + '/'
-    pp_files1 = [sorted(glob(files_directory + month[-3:] + '*'))]
+    files_directory = files_directory_UKCA
+    # print('test',files_directory + header+ file_chunk+ month[-3:])
+    pp_files1 = [sorted(glob(files_directory + header+ file_chunk+'*' + month[-3:]))]
+    print('pp_files1', pp_files1)
     print('pp_files1[0]_test', pp_files1[0])
 
     rosefolder = '/ocean/projects/atm200005p/ding0928/nc_file_full/' + rose + '/'
