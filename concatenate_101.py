@@ -15,28 +15,15 @@ University of Leeds 2016
 
 import sys
 import numpy as np
-#import cartopy.crs as ccrs
 import time
 import iris
 from glob import glob
-#import matplotlib.pyplot as plt
-#import matplotlib.ticker as mticker
-#import iris.plot as iplt
-#from iris.coord_systems import RotatedGeogCS, GeogCS
-#from iris.analysis.cartography import unrotate_pole
-#from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
-#import iris.quickplot as qplt
-#from iris.experimental.equalise_cubes import equalise_attributes
 import datetime
-#from matplotlib.backends.backend_pdf import PdfPages
 from scipy.io import netcdf
 import os
-#import pdb
-#import getpass
-#import multiprocessing
 
 rose = 'u-cs093'
-stashcode='m01s34i119'
+stashcode='m01s38i405'
 def make_directories(nameofdir):
     newdir = os.path.join(nameofdir)
     print(newdir)
@@ -60,7 +47,7 @@ def concatenate_nc_files(smallncfolder, bigncfolder, stashcode):
     print(cube)
     time_array = cube.coord('time').points
     print('Concatenated {} files'.format(len(time_array)))
-    saving_name = bigncfolder+'Rgn_'+cube.name()+'_'+stashcode+'.nc'
+    saving_name = bigncfolder+'Rgn_'+cube.name()+'_'+stashcode+'test'+'.nc'
     iris.save(cube,saving_name, netcdf_format="NETCDF4")
     print('File {} Saved'.format(saving_name))
     print('\n')

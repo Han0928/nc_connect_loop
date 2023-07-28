@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Concatenates cubes and then plots files that show the time evolution of variables.
+This is the working version! 
+    Han,July 2023
 """
 
 import sys
@@ -13,7 +15,7 @@ import datetime
 from scipy.io import netcdf
 import os
 
-stashcode='m01s34i119'  #P m01s00i408
+stashcode='m01s38i405'  #P m01s00i408
 # regional model location+ stashcode
 
 # nuc_num_mixing = STASH='m01s34i101'
@@ -42,10 +44,12 @@ def lat_range(cell):
 def height_level_range(cell):
     return 0 <= cell <= 40
 
-rose = 'u-cs093'
-files_directory_UKCA='/jet/home/ding0928/cylc-run/'+rose+'/share/cycle/'
+rose = 'u-cy282'
+files_directory_UKCA='/jet/home/ding0928/cylc-run/'+rose+'/share/data/History_Data/'
 days=[ str('0720'), str('0722'), str('0724'), str('0726'), str('0728'), str('0730'), str('0801'), str('0803'), str('0805'), str('0807'), str('0809')]
-filechunks = ['pe']
+# days = ['pm2014apr', 'pm2014feb', 'pm2014jan', 'pm2014jul', 'pm2014jun', 'pm2014mar', 'pm2014may']
+
+filechunks = ['pd']
 run = '20140720T0000Z'
 
 def make_directories(nameofdir):
